@@ -1,0 +1,6 @@
+{
+  "name": "TODOIST BOSS",
+  "description": "Centro de integração operacional do escritório com o Todoist.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
