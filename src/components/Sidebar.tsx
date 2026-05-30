@@ -6,6 +6,8 @@
 import React, { useState } from 'react';
 import { 
   LayoutDashboard, 
+  Workflow,
+  Coins,
   Briefcase, 
   Megaphone, 
   Settings, 
@@ -28,6 +30,8 @@ export default function Sidebar({ currentView, onViewChange }: SidebarProps) {
 
   const menuItems = [
     { id: 'dashboard' as ViewType, label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'operacoes' as ViewType, label: 'Operações', icon: Workflow },
+    { id: 'financeiro' as ViewType, label: 'Financeiro', icon: Coins },
     { id: 'secretariado' as ViewType, label: 'Secretariado', icon: Briefcase },
     { id: 'marketing' as ViewType, label: 'Marketing', icon: Megaphone },
     { id: 'configuracoes' as ViewType, label: 'Configurações', icon: Settings },

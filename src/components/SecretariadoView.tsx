@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { motion } from 'motion/react';
+import { CardItem } from '../types';
 import { 
   Briefcase, 
   Calendar, 
@@ -12,49 +13,38 @@ import {
   Clock, 
   PhoneCall,
   Sliders,
-  ChevronRight,
-  Sparkles,
-  Info
+  Info 
 } from 'lucide-react';
 
-export default function SecretariadoView() {
-  const secretariadoCards = [
-    {
-      id: 'sec-1',
-      title: 'Criar Tarefa no Todoist',
-      description: 'Lançamento estrutural da tarefa principal na conta do Todoist para acompanhamento geral do escritório.',
-      badge: 'Planejamento',
-      icon: CheckSquare
-    },
-    {
-      id: 'sec-2',
-      title: 'Criar Subtarefa para o Secretariado - Agendar reunião de Estruturação',
-      description: 'Criação automática da subtarefa de agendamento interno para estruturar os fluxos burocráticos iniciais.',
-      badge: 'Planejamento',
-      icon: Calendar
-    },
-    {
-      id: 'sec-3',
-      title: 'Criar Subtarefa para o Secretariado - Agendar reunião de Revisão',
-      description: 'Agendamento periódico para conferência de métricas e status de entregáveis operacionais.',
-      badge: 'Planejamento',
-      icon: Clock
-    },
-    {
-      id: 'sec-4',
-      title: 'Criar Subtarefa para o Secretariado - Agendar reunião com o Cliente',
-      description: 'Estabelecer primeiro contato com o novo cliente e alinhar calendário com a gerência.',
-      badge: 'Planejamento',
-      icon: PhoneCall
-    },
-    {
-      id: 'sec-5',
-      title: 'Criar Subtarefa para o Secretariado - Adicionar telefone do cliente no celular',
-      description: 'Adicionar o número de telefone de contato gerado no cadastro oficial ao celular funcional da unidade.',
-      badge: 'Planejamento',
-      icon: Sliders
+interface SecretariadoViewProps {
+  cards: CardItem[];
+  onConfigure: (cardId: string) => void;
+}
+
+export default function SecretariadoView({ cards, onConfigure }: SecretariadoViewProps) {
+  // Extract Secretariado cards
+  const secretariadoCards = cards.filter(card => card.sector === 'Secretariado');
+
+  const getStatusColor = (status: CardItem['status']) => {
+    switch (status) {
+      case 'Ativa':
+        return 'text-emerald-700 bg-emerald-50 border-emerald-100';
+      case 'Inativa':
+        return 'text-gray-500 bg-gray-50 border-gray-100';
+      case 'Em planejamento':
+        return 'text-amber-700 bg-amber-50 border-amber-100';
+      default:
+        return 'text-gray-500 bg-gray-50 border-gray-100';
     }
-  ];
+  };
+
+  const getSecretariadoIcon = (id: string) => {
+    if (id.includes('tarefa-p')) return <CheckSquare size={18} className="text-[#E44232]" />;
+    if (id.includes('reun-est')) return <Calendar size={18} className="text-blue-500" />;
+    if (id.includes('reun-rev')) return <Clock size={18} className="text-purple-500" />;
+    if (id.includes('reun-cli')) return <PhoneCall size={18} className="text-teal-500" />;
+    return <Sliders size={18} className="text-amber-500" />;
+  };
 
   return (
     <motion.div
@@ -77,53 +67,54 @@ export default function SecretariadoView() {
       <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex gap-3 text-amber-900">
         <Info className="shrink-0 mt-0.5 text-amber-700" size={18} />
         <div>
-          <h4 className="text-xs font-bold uppercase tracking-wider">Estruturas Estáticas Ativas</h4>
+          <h4 className="text-xs font-bold uppercase tracking-wider">Secretariado Ativo</h4>
           <p className="text-xs text-amber-850 mt-1 leading-relaxed">
-            Estes cards representam a fundação visual requerida. Na fase seguinte, serão conectados via webhook à API oficial para sincronismo ativo.
+            Use os botões de configuração rápidos para alterar os dados de execução pré-definidos para o Secretariado no Todoist.
           </p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="secretariado-cards">
-        {secretariadoCards.map((card, idx) => {
-          const IconComponent = card.icon;
-          return (
-            <div 
-              key={card.id}
-              id={card.id}
-              className="bg-white rounded-xl border border-[#E0E0E0] hover:border-gray-300 shadow-xs hover:shadow-sm transition-all duration-200 flex flex-col justify-between"
-            >
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 bg-[#E44232]/10 text-[#E44232] rounded">
-                    {card.badge}
-                  </span>
-                  <div className="p-2 bg-gray-50 text-gray-400 rounded-lg">
-                    <IconComponent size={18} />
-                  </div>
+        {secretariadoCards.map((card, idx) => (
+          <div 
+            key={card.id}
+            id={card.id}
+            className="bg-white rounded-xl border border-[#E0E0E0] hover:border-gray-300 shadow-xs hover:shadow-sm transition-all duration-200 flex flex-col justify-between"
+          >
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4 gap-4">
+                <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold border ${getStatusColor(card.status)}`}>
+                  {card.status}
+                </span>
+                <div className="p-2 bg-gray-50 rounded-lg">
+                  {getSecretariadoIcon(card.id)}
                 </div>
-
-                <h3 className="font-bold text-gray-900 text-base mb-2 leading-snug">
-                  {card.title}
-                </h3>
-                
-                <p className="text-xs text-gray-500 leading-relaxed font-normal">
-                  {card.description}
-                </p>
               </div>
 
-              <div className="px-6 py-4 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
-                <span className="text-[11px] font-semibold text-gray-400 font-mono">SEC-0{idx + 1}</span>
-                <button
-                  disabled
-                  className="text-xs text-[#B03428] font-bold hover:underline cursor-not-allowed scale-95 origin-right"
-                >
-                  Configurar depois
-                </button>
+              <h3 className="font-bold text-gray-900 text-base mb-2 leading-snug">
+                {card.title}
+              </h3>
+              
+              <p className="text-xs text-gray-500 leading-relaxed font-normal">
+                Configuração para disparo em lote sob o escopo de reuniões e trâmites de recepção jurídica.
+              </p>
+
+              <div className="text-[11px] text-gray-400 font-semibold mt-3">
+                Categoria: <span className="text-gray-600 font-semibold">{card.category}</span>
               </div>
             </div>
-          );
-        })}
+
+            <div className="px-6 py-4 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
+              <span className="text-[11px] font-semibold text-gray-400 font-mono">SEC-0{idx + 1}</span>
+              <button
+                onClick={() => onConfigure(card.id)}
+                className="text-xs text-[#E44232] hover:text-[#B03428] font-bold underline cursor-pointer transition-colors"
+              >
+                Configurar automação
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
     </motion.div>
   );

@@ -5,43 +5,45 @@
 
 import React from 'react';
 import { motion } from 'motion/react';
+import { CardItem } from '../types';
 import { 
   Megaphone, 
   Instagram, 
   Facebook, 
   Linkedin,
   Video,
-  ChevronRight,
   Info 
 } from 'lucide-react';
 
-export default function MarketingView() {
-  const marketingCards = [
-    {
-      id: 'mkt-1',
-      title: 'Criar subtarefa para o Marketing - Adicionar contato no Instagram',
-      description: 'Lançar subtarefa sob a conta de marketing para seguir o novo cliente e interagir com publicações estratégicas.',
-      badge: 'Planejamento',
-      icon: Instagram,
-      color: 'text-[#E1306C] bg-[#E1306C]/10'
-    },
-    {
-      id: 'mkt-2',
-      title: 'Criar subtarefa para o Marketing - Adicionar contato no Facebook',
-      description: 'Adicionar a conta do novo lead comercial aos nossos grupos e páginas do Facebook para postagem automatizada.',
-      badge: 'Planejamento',
-      icon: Facebook,
-      color: 'text-[#1877F2] bg-[#1877F2]/10'
-    },
-    {
-      id: 'mkt-3',
-      title: 'Criar subtarefa para o Marketing - Adicionar contato no TikTok',
-      description: 'Criação automática para monitoramento de tendências, lançamentos e menções por vídeo em mídias corporativas.',
-      badge: 'Planejamento',
-      icon: Video,
-      color: 'text-[#25F4EE] bg-[#25F4EE]/10'
+interface MarketingViewProps {
+  cards: CardItem[];
+  onConfigure: (cardId: string) => void;
+}
+
+export default function MarketingView({ cards, onConfigure }: MarketingViewProps) {
+  // Extract Marketing cards from centrally managed list
+  const marketingCards = cards.filter(card => card.sector === 'Marketing');
+
+  const getStatusColor = (status: CardItem['status']) => {
+    switch (status) {
+      case 'Ativa':
+        return 'text-emerald-700 bg-emerald-50 border-emerald-100';
+      case 'Inativa':
+        return 'text-gray-500 bg-gray-50 border-gray-100';
+      case 'Em planejamento':
+        return 'text-amber-700 bg-amber-50 border-amber-100';
+      default:
+        return 'text-gray-500 bg-gray-50 border-gray-100';
     }
-  ];
+  };
+
+  const getMarketingIcon = (id: string) => {
+    if (id.includes('inst')) return <Instagram size={18} className="text-[#E1306C]" />;
+    if (id.includes('face')) return <Facebook size={18} className="text-[#1877F2]" />;
+    if (id.includes('tiktok')) return <Video size={18} className="text-black" />;
+    if (id.includes('pub')) return <Megaphone size={18} className="text-blue-500" />;
+    return <Linkedin size={18} className="text-indigo-600" />;
+  };
 
   return (
     <motion.div
@@ -53,7 +55,7 @@ export default function MarketingView() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 pb-2 border-b border-gray-200">
         <div>
           <h2 className="text-3xl font-bold text-gray-950 tracking-tight">Marketing</h2>
-          <p className="text-gray-500 text-sm mt-1">Sincronismo de novas audiências e subtarefas de assessoria digital.</p>
+          <p className="text-gray-500 text-sm mt-1">Sincronismo de novas audiências, publicações e assessoria digital.</p>
         </div>
         <div className="text-right text-xs text-gray-400 font-mono tracking-wider bg-gray-100 px-2.5 py-1 rounded">
           ROUTE: /marketing
@@ -64,53 +66,54 @@ export default function MarketingView() {
       <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex gap-3 text-amber-900">
         <Info className="shrink-0 mt-0.5 text-amber-700" size={18} />
         <div>
-          <h4 className="text-xs font-bold uppercase tracking-wider">Metas Visuais Ativas</h4>
+          <h4 className="text-xs font-bold uppercase tracking-wider">Marketing Ativo</h4>
           <p className="text-xs text-amber-850 mt-1 leading-relaxed">
-            Cards de atribuição representados de acordo com os critérios definidos. Todas as opções de configuração estão estáticas neste estágio fundador.
+            Configure regras personalizadas de mídias sociais para cadastrar subtarefas de acompanhamento automaticamente sob a conta do cliente.
           </p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="marketing-cards">
-        {marketingCards.map((card, idx) => {
-          const IconComponent = card.icon;
-          return (
-            <div 
-              key={card.id}
-              id={card.id}
-              className="bg-white rounded-xl border border-[#E0E0E0] hover:border-gray-300 shadow-xs hover:shadow-sm transition-all duration-200 flex flex-col justify-between"
-            >
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 bg-gray-100 text-gray-600 rounded">
-                    {card.badge}
-                  </span>
-                  <div className={`p-2 rounded-lg ${card.color}`}>
-                    <IconComponent size={18} />
-                  </div>
+        {marketingCards.map((card, idx) => (
+          <div 
+            key={card.id}
+            id={card.id}
+            className="bg-white rounded-xl border border-[#E0E0E0] hover:border-gray-300 shadow-xs hover:shadow-sm transition-all duration-200 flex flex-col justify-between"
+          >
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4 gap-4">
+                <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold border ${getStatusColor(card.status)}`}>
+                  {card.status}
+                </span>
+                <div className="p-2 bg-gray-50 rounded-lg">
+                  {getMarketingIcon(card.id)}
                 </div>
-
-                <h3 className="font-bold text-gray-900 text-base mb-2 leading-snug">
-                  {card.title}
-                </h3>
-                
-                <p className="text-xs text-gray-500 leading-relaxed font-normal">
-                  {card.description}
-                </p>
               </div>
 
-              <div className="px-6 py-4 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
-                <span className="text-[11px] font-semibold text-gray-400 font-mono">MKT-0{idx + 1}</span>
-                <button
-                  disabled
-                  className="text-xs text-gray-400 font-bold hover:underline cursor-not-allowed scale-95 origin-right"
-                >
-                  Configurar depois
-                </button>
+              <h3 className="font-bold text-gray-900 text-base mb-2 leading-snug">
+                {card.title}
+              </h3>
+              
+              <p className="text-xs text-gray-500 leading-relaxed font-normal">
+                Modelo operacional de inserção de público-alvo nas diretivas do setor de marketing e redes sociais corporativas.
+              </p>
+
+              <div className="text-[11px] text-gray-400 font-semibold mt-3">
+                Categoria: <span className="text-gray-600 font-semibold">{card.category}</span>
               </div>
             </div>
-          );
-        })}
+
+            <div className="px-6 py-4 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
+              <span className="text-[11px] font-semibold text-gray-400 font-mono">MKT-0{idx + 1}</span>
+              <button
+                onClick={() => onConfigure(card.id)}
+                className="text-xs text-[#E44232] hover:text-[#B03428] font-bold underline cursor-pointer transition-colors"
+              >
+                Configurar automação
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
     </motion.div>
   );
